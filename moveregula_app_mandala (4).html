@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoveRegula - Integração Psicologia e EF</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* =============== PALETA DE CORES =============== */
+        :root {
+            --primary: #27AE60;      /* Verde - Movimento, Crescimento */
+            --secondary: #3498DB;    /* Azul - Confiança, Calma */
+            --accent: #F39C12;       /* Laranja - Energia, Motivação */
+            --danger: #E74C3C;       /* Vermelho - Atenção */
+            --light: #ECF0F1;        /* Cinza claro - Fundo */
+            --dark: #2C3E50;         /* Cinza escuro - Texto */
+            --white: #FFFFFF;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* =============== CONTAINER E LAYOUT =============== */
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: var(--white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            flex: 1;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* =============== HEADER COM LOGO =============== */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* =============== BOTÕES =============== */
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #20903a 100%);
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #2980b9 100%);
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent) 0%, #e67e22 100%);
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-outline {
+            background: var(--white);
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+        }
+
+        .btn-outline:hover {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* =============== CARDS =============== */
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05) 0%, rgba(52, 152, 219, 0.05) 100%);
+        }
+
+        /* =============== ÍCONES EMOÇÃO =============== */
+        .emotion-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .emotion-btn {
+            aspect-ratio: 1;
+            border-radius: 16px;
+            border: 3px solid var(--light);
+            background: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .emotion-btn:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .emotion-btn.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+            transform: scale(1.1);
+        }
+
+        .emotion-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* =============== SLIDER =============== */
+        .slider-container {
+            margin: 30px 0;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, var(--danger), var(--accent), var(--primary));
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--secondary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--secondary);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        /* =============== TEXTAREA =============== */
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--light);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        /* =============== ACTIVITY GRID =============== */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .activity-card {
+            aspect-ratio: 1;
+            border-radius: 16px;
+            border: 3px solid var(--light);
+            background: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .activity-card:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .activity-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+            transform: scale(1.1);
+        }
+
+        .activity-emoji {
+            font-size: 36px;
+        }
+
+        .activity-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* =============== FEEDBACK RESULT =============== */
+        .result-box {
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .result-improved {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.15) 0%, rgba(52, 152, 219, 0.15) 100%);
+            border: 2px solid var(--primary);
+        }
+
+        .result-maintained {
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.15) 0%, rgba(230, 126, 34, 0.15) 100%);
+            border: 2px solid var(--accent);
+        }
+
+        .result-declined {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(192, 57, 43, 0.15) 100%);
+            border: 2px solid var(--danger);
+        }
+
+        .result-emoji {
+            font-size: 56px;
+            margin-bottom: 10px;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .result-text {
+            font-size: 14px;
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        /* =============== PROGRESS BAR =============== */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--light);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        /* =============== STREAK BADGE =============== */
+        .streak-badge {
+            background: linear-gradient(135deg, var(--accent) 0%, #e67e22 100%);
+            color: var(--white);
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 16px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .streak-number {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .streak-text {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* =============== CALENDAR/WEEK VIEW =============== */
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--white);
+            text-align: center;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .day-cell.success {
+            background: linear-gradient(135deg, var(--primary) 0%, #20903a 100%);
+        }
+
+        .day-cell.partial {
+            background: linear-gradient(135deg, var(--accent) 0%, #e67e22 100%);
+        }
+
+        .day-cell.failed {
+            background: linear-gradient(135deg, var(--danger) 0%, #c0392b 100%);
+        }
+
+        .day-cell.empty {
+            background: var(--light);
+            color: #95a5a6;
+        }
+
+        .day-name {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        .day-mark {
+            font-size: 16px;
+        }
+
+        /* =============== STATS =============== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* =============== TIMER =============== */
+        .timer-display {
+            font-size: 64px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--secondary);
+            margin: 40px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-text {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        /* =============== INPUT FIELDS =============== */
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--light);
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        /* =============== PROFILE TYPE SELECTOR =============== */
+        .profile-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .profile-option {
+            padding: 20px;
+            border-radius: 16px;
+            border: 3px solid var(--light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: var(--white);
+        }
+
+        .profile-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .profile-option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+        }
+
+        .profile-emoji {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .profile-desc {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        /* =============== WELCOME SCREEN =============== */
+        .welcome-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .welcome-logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        /* =============== NAVIGATION =============== */
+        .nav-bottom {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 12px;
+            background: var(--white);
+            border-top: 1px solid var(--light);
+            margin-top: auto;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            text-align: center;
+            color: #95a5a6;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        /* =============== RESPONSIVE =============== */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+        }
+
+        /* =============== LOADING =============== */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+
+        .spinner {
+            border: 4px solid var(--light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- =============== TELA 0: ONBOARDING =============== -->
+        <div class="screen active" id="screenOnboarding">
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon"><svg viewBox="0 0 200 200" width="40" height="40" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                    <defs>
+                        <linearGradient id="mgradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="100" cy="30" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="148" cy="47" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="148" cy="153" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="100" cy="170" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="52" cy="153" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="52" cy="47" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="100" cy="100" r="42" fill="white" opacity="0.95"/>
+                    <circle cx="100" cy="100" r="32" fill="white"/>
+                    <text x="100" y="112" text-anchor="middle" font-size="32" dominant-baseline="middle">💚</text>
+                </svg></div>
+                    <div>MoveRegula</div>
+                </div>
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px;">
+                <div id="onboardingContent"></div>
+            </div>
+        </div>
+
+        <!-- =============== TELA 1: WELCOME =============== -->
+        <div class="screen" id="screenWelcome">
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon"><svg viewBox="0 0 200 200" width="40" height="40" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                    <defs>
+                        <linearGradient id="mgradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="100" cy="30" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="148" cy="47" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="148" cy="153" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="100" cy="170" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="52" cy="153" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="52" cy="47" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="100" cy="100" r="42" fill="white" opacity="0.95"/>
+                    <circle cx="100" cy="100" r="32" fill="white"/>
+                    <text x="100" y="112" text-anchor="middle" font-size="32" dominant-baseline="middle">💚</text>
+                </svg></div>
+                    <div>MoveRegula</div>
+                </div>
+                <p>Integração de Psicologia e Educação Física</p>
+            </div>
+
+            <div class="welcome-content">
+                <div class="welcome-logo" id="mascote">💚✨</div>
+                <h1 class="welcome-title">Bem-vindo!</h1>
+                <p class="welcome-subtitle">Vamos começar a mover nosso corpo e regular nossas emoções.</p>
+                <button class="btn btn-primary" onclick="goToScreen('screenProfile')">
+                    Começar
+                </button>
+            </div>
+        </div>
+
+        <!-- =============== TELA 2: WELCOME NOME =============== -->
+        <div class="screen" id="screenProfile">
+            <div class="header">
+                <h1>Bem-vindo! 👋</h1>
+                <p>Vamos começar</p>
+            </div>
+
+            <div style="flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: center;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <p style="color: #7f8c8d; font-size: 15px; line-height: 1.6;">
+                        Qual é o seu nome? 😊
+                    </p>
+                </div>
+
+                <input type="text" id="userName" placeholder="Digite seu nome aqui" style="margin-bottom: 20px; font-size: 16px; padding: 14px;">
+                
+                <button class="btn btn-primary" onclick="goToNameDashboard()" style="margin-top: 12px;">
+                    Começar
+                </button>
+            </div>
+        </div>
+
+        <!-- =============== TELA 3: DASHBOARD =============== -->
+        <div class="screen" id="screenDashboard">
+            <div class="header">
+                <h1>Olá, <span id="displayName">Amigo</span>! 👋</h1>
+                <p>Como você está hoje?</p>
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column; padding: 20px; gap: 16px;">
+                <div style="text-align: center; margin-top: 20px;">
+                    <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 16px;">Toque em "Iniciar Atividade" para começar</p>
+                </div>
+
+                <div class="streak-badge" id="streakDisplay">
+                    <div class="streak-number">0</div>
+                    <div class="streak-text">dias seguidos 🔥</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="weekStats">0</div>
+                        <div class="stat-label">desta semana</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="monthStats">0</div>
+                        <div class="stat-label">do mês</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="goToScreen('screenCheckin')" style="margin-top: 20px;">
+                    ▶ Iniciar Atividade
+                </button>
+
+                <button class="btn btn-outline" onclick="goToScreen('screenGraph')">
+                    📊 Ver Progresso
+                </button>
+            </div>
+        </div>
+
+        <!-- =============== TELA 4: CHECK-IN =============== -->
+        <div class="screen" id="screenCheckin">
+            <div class="header">
+                <h1>Check-In 🎯</h1>
+                <p>Como você está AGORA?</p>
+            </div>
+
+            <div style="flex: 1; padding: 20px; overflow-y: auto;">
+                <div id="checkinContent"></div>
+
+                <button class="btn btn-primary" onclick="proceedToActivities()" style="margin-top: 24px;">
+                    Próximo: Escolher Atividade
+                </button>
+            </div>
+        </div>
+
+        <!-- =============== TELA 5: CHOOSE ACTIVITY =============== -->
+        <div class="screen" id="screenActivity">
+            <div class="header">
+                <h1>Escolha a Atividade 🎯</h1>
+                <p>Estruturadas ou do Dia a Dia?</p>
+            </div>
+
+            <div style="flex: 1; padding: 20px; overflow-y: auto;">
+                <h3 style="color: var(--primary); margin-bottom: 12px; font-size: 14px; font-weight: 600;">🏃 ATIVIDADES ESTRUTURADAS</h3>
+                <div class="activity-grid">
+                    <div class="activity-card" onclick="selectActivity('danca')">
+                        <div class="activity-emoji">💃</div>
+                        <div class="activity-name">Dança</div>
+                        <div style="font-size: 11px; color: #27AE60; margin-top: 5px; font-weight: 600;">+50 pts</div>
+                    </div>
+                    <div class="activity-card" onclick="selectActivity('caminhada')">
+                        <div class="activity-emoji">🚶</div>
+                        <div class="activity-name">Caminhada</div>
+                        <div style="font-size: 11px; color: #27AE60; margin-top: 5px; font-weight: 600;">+50 pts</div>
+                    </div>
+                    <div class="activity-card" onclick="selectActivity('yoga')">
+                        <div class="activity-emoji">🧘</div>
+                        <div class="activity-name">Ioga</div>
+                        <div style="font-size: 11px; color: #27AE60; margin-top: 5px; font-weight: 600;">+50 pts</div>
+                    </div>
+                    <div class="activity-card" onclick="selectActivity('brincadeira')">
+                        <div class="activity-emoji">🎮</div>
+                        <div class="activity-name">Brincadeira</div>
+                        <div style="font-size: 11px; color: #27AE60; margin-top: 5px; font-weight: 600;">+50 pts</div>
+                    </div>
+                </div>
+
+                <h3 style="color: #F39C12; margin-bottom: 8px; margin-top: 25px; font-size: 14px; font-weight: 600;">⭐ TAREFAS DO DIA A DIA</h3>
+                <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 12px;">Atividades do dia a dia reforçam autoeficácia! (Recompensas maiores)</p>
+                <div class="activity-grid">
+                    <div class="activity-card" onclick="selectActivity('arrumar-quarto')">
+                        <div class="activity-emoji">🧹</div>
+                        <div class="activity-name">Arrumar Quarto</div>
+                        <div style="font-size: 11px; color: #F39C12; margin-top: 5px; font-weight: 600;">+100 pts ⭐</div>
+                    </div>
+                    <div class="activity-card" onclick="selectActivity('cozinha')">
+                        <div class="activity-emoji">👨‍🍳</div>
+                        <div class="activity-name">Cozinha com Responsável</div>
+                        <div style="font-size: 11px; color: #F39C12; margin-top: 5px; font-weight: 600;">+100 pts ⭐</div>
+                    </div>
+                    <div class="activity-card" onclick="selectActivity('conversa')">
+                        <div class="activity-emoji">💬</div>
+                        <div class="activity-name">Conversa com Alguém</div>
+                        <div style="font-size: 11px; color: #F39C12; margin-top: 5px; font-weight: 600;">+100 pts ⭐</div>
+                    </div>
+                    <div class="activity-card" onclick="selectActivity('estudo')">
+                        <div class="activity-emoji">📚</div>
+                        <div class="activity-name">Tempo de Estudo</div>
+                        <div style="font-size: 11px; color: #F39C12; margin-top: 5px; font-weight: 600;">+100 pts ⭐</div>
+                    </div>
+                    <div class="activity-card" onclick="selectActivity('criatividade')">
+                        <div class="activity-emoji">🎨</div>
+                        <div class="activity-name">Criatividade/Arte</div>
+                        <div style="font-size: 11px; color: #F39C12; margin-top: 5px; font-weight: 600;">+100 pts ⭐</div>
+                    </div>
+                    <div class="activity-card" onclick="selectActivity('social')">
+                        <div class="activity-emoji">👫</div>
+                        <div class="activity-name">Interação Social</div>
+                        <div style="font-size: 11px; color: #F39C12; margin-top: 5px; font-weight: 600;">+100 pts ⭐</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="startActivity()" style="margin-top: 24px;">
+                    ▶ Começar Atividade
+                </button>
+            </div>
+        </div>
+
+        <!-- =============== TELA 5.5: TUTORIAL ATIVIDADE =============== -->
+        <div class="screen" id="screenTutorial">
+            <div class="header">
+                <h1 id="tutorialTitle">Como fazer a Atividade</h1>
+                <p>Passo a passo</p>
+            </div>
+
+            <div style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column;">
+                <div id="tutorialContent" style="flex: 1;"></div>
+
+                <button class="btn btn-primary" onclick="startActivityTimer()" style="margin-top: 20px;">
+                    ▶ Começar Agora!
+                </button>
+
+                <button class="btn btn-outline" onclick="goToScreen('screenActivity')" style="margin-top: 12px;">
+                    ← Voltar
+                </button>
+            </div>
+        </div>
+
+        <!-- =============== TELA 6: TIMER =============== -->
+        <div class="screen" id="screenTimer">
+            <div class="header">
+                <h1 id="activityTitle">Dança</h1>
+                <p>Você está indo bem! 💪</p>
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;">
+                <div style="text-align: center; margin-bottom: 20px; font-size: 32px;" id="timerMascote">😊</div>
+
+                <div class="timer-display" id="timerDisplay">10:00</div>
+
+                <div style="margin: 30px 0; width: 100%; max-width: 200px;">
+                    <div style="width: 100%; height: 8px; background: var(--light); border-radius: 4px; overflow: hidden;">
+                        <div id="timerProgress" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%); transition: width 0.5s;"></div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; margin-top: 20px;">
+                    <button class="btn" style="padding: 12px 8px; background: var(--secondary); color: white;" id="pauseBtn" onclick="togglePause()">
+                        ⏸ Pausar
+                    </button>
+                    <button class="btn" style="padding: 12px 8px; background: var(--primary); color: white;" onclick="finishActivity()">
+                        ✓ Terminei
+                    </button>
+                    <button class="btn" style="padding: 12px 8px; background: var(--danger); color: white;" onclick="stopTimer()">
+                        ⏹ Parar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =============== TELA 7: CHECK-OUT =============== -->
+        <div class="screen" id="screenCheckout">
+            <div class="header">
+                <h1>Check-Out 🎯</h1>
+                <p>Como você está AGORA?</p>
+            </div>
+
+            <div style="flex: 1; padding: 20px; overflow-y: auto;">
+                <div id="checkoutContent"></div>
+
+                <button class="btn btn-primary" onclick="submitCheckout()" style="margin-top: 24px;">
+                    Registrar Resultado
+                </button>
+            </div>
+        </div>
+
+        <!-- =============== TELA 8: RESULTADO =============== -->
+        <div class="screen" id="screenResult">
+            <div class="header">
+                <h1>Resultado 🎉</h1>
+                <p>Veja o que aconteceu</p>
+            </div>
+
+            <div style="flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: center;">
+                <div id="resultContent"></div>
+
+                <button class="btn btn-primary" onclick="goToScreen('screenRelatorio')" style="margin-top: 15px;">
+                    📝 Escrever Relatório (Opcional)
+                </button>
+
+                <button class="btn btn-outline" onclick="goToScreen('screenDashboard')" style="margin-top: 12px;">
+                    ← Voltar ao Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- =============== TELA 8.5: RELATÓRIO PÓS-ATIVIDADE =============== -->
+        <div class="screen" id="screenRelatorio">
+            <div class="header">
+                <h1>📝 Relatório da Atividade</h1>
+                <p>Compartilhe sua experiência</p>
+            </div>
+
+            <div style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: var(--dark); font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                        O que você fez? (Descreva a atividade)
+                    </label>
+                    <textarea id="relOQueFez" placeholder="Ex: Dancei ao som de uma música animada..." style="width: 100%; padding: 10px; border: 1px solid #ECF0F1; border-radius: 10px; font-size: 14px; min-height: 60px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: var(--dark); font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                        Como se saiu? (Dificuldades, conquistas)
+                    </label>
+                    <textarea id="relComoSauiu" placeholder="Ex: Consegui dançar até o final! Achei difícil no começo..." style="width: 100%; padding: 10px; border: 1px solid #ECF0F1; border-radius: 10px; font-size: 14px; min-height: 60px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: var(--dark); font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                        Como você se sentiu? (Emoções durante/após)
+                    </label>
+                    <textarea id="relComoSentiu" placeholder="Ex: Comecei nervoso mas depois fiquei feliz..." style="width: 100%; padding: 10px; border: 1px solid #ECF0F1; border-radius: 10px; font-size: 14px; min-height: 60px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <div style="margin-bottom: 15px; padding: 12px; background: #f9f9f9; border-radius: 10px; border-left: 4px solid var(--primary);">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="relCompartilhar" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="font-size: 14px; color: #2C3E50; font-weight: 500;">
+                            Compartilhar com responsáveis?<br/>
+                            <span style="font-size: 12px; color: #7f8c8d; font-weight: 400;">(Ajuda pais/profissionais a acompanhar)</span>
+                        </span>
+                    </label>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto;">
+                    <button class="btn btn-outline" onclick="goToScreen('screenDashboard')">
+                        ← Pular
+                    </button>
+                    <button class="btn btn-primary" onclick="salvarRelatorio()">
+                        ✓ Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =============== TELA 9: PROGRESS GRAPH =============== -->
+        <div class="screen" id="screenGraph">
+            <div class="header">
+                <h1>Seu Progresso 📊</h1>
+                <p>Últimos 7 dias</p>
+            </div>
+
+            <div style="flex: 1; padding: 20px; overflow-y: auto;">
+                <h3 style="margin-bottom: 16px; color: var(--dark);">Esta Semana</h3>
+                
+                <div class="week-grid" id="weekGrid"></div>
+
+                <div style="margin-top: 24px; padding: 16px; background: var(--light); border-radius: 12px;">
+                    <h3 style="margin-bottom: 12px; color: var(--dark); font-size: 14px;">Legenda</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px;">
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 6px;"></div>
+                            <span>Melhorou</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <div style="width: 24px; height: 24px; background: var(--accent); border-radius: 6px;"></div>
+                            <span>S/ mudança</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <div style="width: 24px; height: 24px; background: var(--danger); border-radius: 6px;"></div>
+                            <span>Não fez</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <div style="width: 24px; height: 24px; background: var(--light); border: 2px solid #bdc3c7; border-radius: 6px;"></div>
+                            <span>Futuro</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-outline" onclick="goToScreen('screenDashboard')" style="margin-top: 24px;">
+                    ← Voltar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =============== STATE MANAGEMENT ===============
+        let appState = {
+            interfaceType: null, // 'emoji' (TEA-like) ou 'slider' (Anxiety-like) - detecta automaticamente
+            userName: 'Amigo',
+            checkinValue: null,
+            checkinText: '',
+            selectedActivity: null,
+            checkoutValue: null,
+            checkoutText: '',
+            timerInterval: null,
+            timerSeconds: 600, // 10 min
+            timerPaused: false,
+            firstTimeUser: true,
+            showOnboarding: true,
+            mascoteMood: 'happy', // happy, encouraging, excited, calm
+            relatorio: {
+                oQueFez: '',
+                comoSauiu: '',
+                comoSentiu: '',
+                compartilhar: false
+            },
+            data: {
+                history: [],
+                streak: 0,
+                lastActivityDate: null,
+                relatorios: [] // Armazena todos os relatórios
+            }
+        };
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('moveregula_data');
+            if (saved) {
+                appState.data = JSON.parse(saved);
+                appState.firstTimeUser = false; // Se tem dados salvos, já não é primeira vez
+            }
+            
+            const interfaceType = localStorage.getItem('moveregula_interface');
+            if (interfaceType) {
+                appState.interfaceType = interfaceType;
+                appState.firstTimeUser = false;
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('moveregula_data', JSON.stringify(appState.data));
+            if (appState.interfaceType) {
+                localStorage.setItem('moveregula_interface', appState.interfaceType);
+            }
+        }
+
+        // =============== NAVIGATION ===============
+        function goToScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function goToNameDashboard() {
+            const name = document.getElementById('userName').value.trim();
+            if (!name) {
+                alert('Por favor, digite seu nome!');
+                return;
+            }
+            appState.userName = name;
+            document.getElementById('displayName').textContent = appState.userName;
+            goToScreen('screenDashboard');
+        }
+
+        // =============== CHECK-IN ===============
+        function renderCheckinContent() {
+            const container = document.getElementById('checkinContent');
+            
+            // Se é primeira vez, oferecer ambas as interfaces
+            if (appState.firstTimeUser && !appState.interfaceType) {
+                container.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 20px; color: #7f8c8d; font-size: 14px;">
+                        Escolha a forma que você prefere:
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                        <button style="padding: 16px; border: 2px solid #ecf0f1; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s;" 
+                                onclick="chooseInterface('emoji'); renderCheckinContent();">
+                            <div style="font-size: 32px; margin-bottom: 8px;">😐😊😰😤</div>
+                            <div style="font-size: 12px; font-weight: 600; color: var(--dark);">Com Ícones</div>
+                        </button>
+                        <button style="padding: 16px; border: 2px solid #ecf0f1; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s;" 
+                                onclick="chooseInterface('slider'); renderCheckinContent();">
+                            <div style="font-size: 32px; margin-bottom: 8px;">1️⃣0️⃣</div>
+                            <div style="font-size: 12px; font-weight: 600; color: var(--dark);">Com Números</div>
+                        </button>
+                    </div>
+                    <p style="font-size: 12px; color: #95a5a6; text-align: center;">Você pode trocar depois se quiser</p>
+                `;
+                return;
+            }
+
+            // Se já escolheu ou já tem histórico, usar a interface escolhida
+            const useEmoji = appState.interfaceType === 'emoji' || 
+                            (appState.firstTimeUser === false && appState.data.history.length > 0 && 
+                             appState.data.history[0].checkin && typeof appState.data.history[0].checkin === 'string' && appState.data.history[0].checkin.includes('😐'));
+
+            if (useEmoji || appState.interfaceType === 'emoji') {
+                container.innerHTML = `
+                    <div class="emotion-grid">
+                        <button class="emotion-btn" onclick="selectEmotion('😐')">
+                            <div>😐</div>
+                            <div class="emotion-label">Tranquilo</div>
+                        </button>
+                        <button class="emotion-btn" onclick="selectEmotion('😊')">
+                            <div>😊</div>
+                            <div class="emotion-label">Feliz</div>
+                        </button>
+                        <button class="emotion-btn" onclick="selectEmotion('😰')">
+                            <div>😰</div>
+                            <div class="emotion-label">Nervoso</div>
+                        </button>
+                        <button class="emotion-btn" onclick="selectEmotion('😤')">
+                            <div>😤</div>
+                            <div class="emotion-label">Chateado</div>
+                        </button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="slider-container">
+                        <div class="slider-labels">
+                            <span>Tranquilo</span>
+                            <span>Muito Ansioso</span>
+                        </div>
+                        <input type="range" min="1" max="10" value="5" 
+                               oninput="appState.checkinValue = this.value; document.getElementById('sliderValue').textContent = this.value + '/10'">
+                        <div class="slider-value" id="sliderValue">5/10</div>
+                    </div>
+
+                    <label style="display: block; color: var(--dark); font-weight: 600; margin-bottom: 8px; margin-top: 16px;">
+                        O que você está sentindo?
+                    </label>
+                    <textarea placeholder="Descreva o que está na sua mente..." 
+                              oninput="appState.checkinText = this.value"></textarea>
+                `;
+            }
+        }
+
+        function chooseInterface(type) {
+            appState.interfaceType = type;
+            appState.firstTimeUser = false;
+            saveData();
+        }
+
+        function selectEmotion(emoji) {
+            appState.checkinValue = emoji;
+            document.querySelectorAll('.emotion-btn').forEach(el => el.classList.remove('selected'));
+            event.target.closest('.emotion-btn').classList.add('selected');
+        }
+
+        function proceedToActivities() {
+            if (!appState.checkinValue) {
+                alert('Por favor, selecione como você está!');
+                return;
+            }
+            goToScreen('screenActivity');
+        }
+
+        // =============== ACTIVITY ===============
+        function selectActivity(activity) {
+            appState.selectedActivity = activity;
+            document.querySelectorAll('.activity-card').forEach(el => el.classList.remove('selected'));
+            event.target.closest('.activity-card').classList.add('selected');
+        }
+
+        function startActivity() {
+            if (!appState.selectedActivity) {
+                alert('Por favor, escolha uma atividade!');
+                return;
+            }
+
+            const titles = {
+                'danca': 'Dança',
+                'caminhada': 'Caminhada',
+                'yoga': 'Ioga',
+                'brincadeira': 'Brincadeira',
+                'arrumar-quarto': 'Arrumar Quarto',
+                'cozinha': 'Cozinha com Responsável',
+                'conversa': 'Conversa com Alguém',
+                'estudo': 'Tempo de Estudo',
+                'criatividade': 'Criatividade/Arte',
+                'social': 'Interação Social'
+            };
+
+            document.getElementById('activityTitle').textContent = titles[appState.selectedActivity];
+            document.getElementById('tutorialTitle').textContent = `Como fazer: ${titles[appState.selectedActivity]}`;
+
+            // Tutorial passo a passo
+            const tutorials = {
+                'danca': `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🔥 Aquecimento (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Solte os ombros, faça círculos com os braços, pule levemente no lugar. Prepare o corpo!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">💃 Dança Livre (7 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Ouça a música, sinta o ritmo. Você pode pular, girar, mexer como quiser. Não existe forma errada!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🧘 Desaceleração (2 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Diminua a velocidade. Respire fundo. Deixe seu corpo ficar calmo e relaxado.</p>
+                    </div>
+                `,
+                'caminhada': `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🔥 Aquecimento (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Alongue as pernas, gire o tornozelo, estique os braços. Prepare o corpo!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🚶 Caminhada (6 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Caminhe em ritmo moderado (rápido mas conversável). Olhe ao redor, respire profundamente.</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🧘 Volta Lenta (3 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Reduza a velocidade gradualmente. Respiração profunda. Deixe o coração voltar ao normal.</p>
+                    </div>
+                `,
+                'yoga': `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🔥 Preparação (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Sente confortavelmente. Feche os olhos. Respire fundo 5 vezes: inspira pelo nariz, expira pela boca.</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🧘 Sequência (6 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Gato/Vaca → Criança/Descanso → Árvore → Cobra → Torção. Movimentos lentos, respiração profunda.</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">☮️ Relaxamento (3 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Deite no chão ou sente. Feche os olhos. Deixe seu corpo inteiro relaxar completamente.</p>
+                    </div>
+                `,
+                'brincadeira': `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🔥 Aquecimento (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Pule, corra no lugar, faça movimentos aleatórios. Prepare-se para diversão!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🎮 Brincadeira (7 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Pega-pega, jogo de alvo, movimento criativo! Você escolhe. O importante é se mexer e se divertir!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🧘 Desaceleração (2 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Desacelere. Sente. Respire fundo. Você foi incrível!</p>
+                    </div>
+                `,
+                'arrumar-quarto': `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">📋 Planejamento (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Veja o quarto. O que precisa arrumar? Organize seu plano.</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🧹 Arrumação (15-20 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Cama arrumada, roupas dobradas, objetos no lugar. Você escolhe a ordem! Respire e toma seu ritmo.</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🎉 Celebração (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Pronto! Veja seu quarto arrumado. Sinta o orgulho! Você conseguiu!</p>
+                    </div>
+                `,
+                'cozinha': `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">👥 Conexão (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Convide um responsável. Escolha juntos o que vão preparar. Converse!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">👨‍🍳 Preparação (15-20 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Lava, descasca, mistura, mexe... Siga as instruções do responsável. Aprenda algo novo!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">😋 Compartilhamento (2 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Pronto! Sirva ou compartilhe. Sinta a satisfação de criar algo junto!</p>
+                    </div>
+                `,
+                'conversa': `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">👂 Escolha (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Escolha com quem conversar (pais, amigo, avó...). Encontre um lugar tranquilo.</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">💬 Diálogo (10-15 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Converse sobre seu dia, seus sentimentos, seus sonhos. Ouça o outro também! Sem pressa.</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🤝 Fechamento (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Agradeça a conversa. Sinta a conexão! Isso é conexão real.</p>
+                    </div>
+                `,
+                'estudo': `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">📍 Preparação (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Arrume seu espaço. Deixe tudo que precisa perto. Feche distrações (celular, TV...).</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">📚 Foco (15-30 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Leia, escreva, resolva... Faça pausas se precisar. O importante é tentar!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">✅ Revisão (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Veja o que aprendeu. Mesmo pequenos passos contam! Você fez seu melhor.</p>
+                    </div>
+                `,
+                'criatividade': `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🎨 Escolha Criativa (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Pintar, desenhar, esculpir, cantar, dançar, criar histórias... O que você sente vontade?</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">✨ Criação (15-20 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Deixe sua criatividade fluir! Não tem certo ou errado. O importante é expressar!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🌟 Celebração (2 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Veja sua criação! Compartilhe se quiser. Isso é sua verdade expressa!</p>
+                    </div>
+                `,
+                'social': `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">👋 Conexão (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Encontre alguém (amigo, colega, primo...). Convide para algo legal juntos!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">🎯 Interação (15-20 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Joguem, conversem, brinquem, criem algo juntos. Conexão real com outra pessoa!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">💖 Fechamento (1 min)</h3>
+                        <p style="line-height: 1.8; color: #7f8c8d;">Vocês se conectaram! Isso reduz ansiedade e aumenta confiança. Lindo!</p>
+                    </div>
+                `
+            };
+
+            document.getElementById('tutorialContent').innerHTML = tutorials[appState.selectedActivity];
+
+            appState.timerSeconds = 600; // 10 min
+            goToScreen('screenTutorial');
+        }
+
+        function startActivityTimer() {
+            document.getElementById('activityTitle').textContent = {
+                'danca': 'Dança',
+                'caminhada': 'Caminhada',
+                'yoga': 'Ioga',
+                'brincadeira': 'Brincadeira',
+                'arrumar-quarto': 'Arrumar Quarto',
+                'cozinha': 'Cozinha com Responsável',
+                'conversa': 'Conversa com Alguém',
+                'estudo': 'Tempo de Estudo',
+                'criatividade': 'Criatividade/Arte',
+                'social': 'Interação Social'
+            }[appState.selectedActivity];
+
+            appState.timerSeconds = 600;
+            appState.timerPaused = false;
+            goToScreen('screenTimer');
+            startTimer();
+        }
+
+        function togglePause() {
+            if (appState.timerPaused) {
+                // Retomar
+                appState.timerPaused = false;
+                document.getElementById('pauseBtn').textContent = '⏸ Pausar';
+                startTimer();
+            } else {
+                // Pausar
+                appState.timerPaused = true;
+                clearInterval(appState.timerInterval);
+                document.getElementById('pauseBtn').textContent = '▶ Retomar';
+            }
+        }
+
+        function startTimer() {
+            appState.timerInterval = setInterval(() => {
+                if (!appState.timerPaused) {
+                    appState.timerSeconds--;
+                    updateTimerDisplay();
+
+                    if (appState.timerSeconds <= 0) {
+                        finishActivity();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(appState.timerSeconds / 60);
+            const secs = appState.timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${mins}:${secs.toString().padStart(2, '0')}`;
+
+            // Atualizar mascote de acordo com progresso
+            const progress = ((600 - appState.timerSeconds) / 600) * 100;
+            const mascote = document.getElementById('timerMascote');
+            
+            if (progress < 33) {
+                mascote.textContent = '😊';
+            } else if (progress < 66) {
+                mascote.textContent = '🔥';
+            } else {
+                mascote.textContent = '💪';
+            }
+
+            // Atualizar barra de progresso
+            document.getElementById('timerProgress').style.width = progress + '%';
+        }
+
+        // =============== ONBOARDING ===============
+        function showOnboarding() {
+            const slides = [
+                {
+                    title: 'Como Funciona? 🎯',
+                    content: 'Vamos aprender em 3 passos rápidos!',
+                    emoji: '👋'
+                },
+                {
+                    title: 'Passo 1: Check-in 📝',
+                    content: 'Registre como você está AGORA. Pode ser com ícones ou números!',
+                    emoji: '😊'
+                },
+                {
+                    title: 'Passo 2: Atividade 🏃',
+                    content: 'Escolha uma atividade e se mexa por 10 minutos sem distração!',
+                    emoji: '💃'
+                },
+                {
+                    title: 'Passo 3: Check-out ✨',
+                    content: 'Registre como você está AGORA. Veja o resultado!',
+                    emoji: '🎉'
+                },
+                {
+                    title: 'Vamos Começar? 🚀',
+                    content: 'Você está pronto! Clique em "Começar" para continuar.',
+                    emoji: '💚'
+                }
+            ];
+
+            let currentSlide = 0;
+
+            function renderSlide() {
+                const slide = slides[currentSlide];
+                const container = document.getElementById('onboardingContent');
+                
+                container.innerHTML = `
+                    <div style="text-align: center; display: flex; flex-direction: column; gap: 20px;">
+                        <div style="font-size: 64px;">${slide.emoji}</div>
+                        <h1 style="font-size: 24px; color: var(--dark); margin: 0;">${slide.title}</h1>
+                        <p style="font-size: 15px; color: #7f8c8d; line-height: 1.6;">${slide.content}</p>
+                        
+                        <div style="display: flex; gap: 8px; justify-content: center; margin-top: 20px;">
+                            ${slides.map((_, i) => `
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: ${i === currentSlide ? 'var(--primary)' : 'var(--light)'}; transition: all 0.3s;"></div>
+                            `).join('')}
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
+                            ${currentSlide > 0 ? `
+                                <button class="btn btn-outline" onclick="onboardingPrev()">
+                                    ← Anterior
+                                </button>
+                            ` : '<div></div>'}
+                            
+                            ${currentSlide < slides.length - 1 ? `
+                                <button class="btn btn-primary" onclick="onboardingNext()">
+                                    Próximo →
+                                </button>
+                            ` : `
+                                <button class="btn btn-primary" onclick="finishOnboarding()">
+                                    Começar! 🎯
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }
+
+            window.onboardingNext = function() {
+                currentSlide++;
+                renderSlide();
+            };
+
+            window.onboardingPrev = function() {
+                currentSlide--;
+                renderSlide();
+            };
+
+            window.finishOnboarding = function() {
+                appState.showOnboarding = false;
+                localStorage.setItem('moveregula_onboarding_done', 'true');
+                goToScreen('screenProfile');
+            };
+
+            renderSlide();
+        }
+
+        function stopTimer() {
+            clearInterval(appState.timerInterval);
+            goToScreen('screenCheckout');
+            renderCheckoutContent();
+        }
+
+        function finishActivity() {
+            clearInterval(appState.timerInterval);
+            goToScreen('screenCheckout');
+            renderCheckoutContent();
+        }
+
+        // =============== CHECK-OUT ===============
+        function renderCheckoutContent() {
+            const container = document.getElementById('checkoutContent');
+            
+            if (appState.interfaceType === 'emoji') {
+                container.innerHTML = `
+                    <p style="color: #7f8c8d; margin-bottom: 16px; text-align: center;">Como você está agora, depois da atividade?</p>
+                    <div class="emotion-grid">
+                        <button class="emotion-btn" onclick="selectCheckoutEmotion('😐')">
+                            <div>😐</div>
+                            <div class="emotion-label">Tranquilo</div>
+                        </button>
+                        <button class="emotion-btn" onclick="selectCheckoutEmotion('😊')">
+                            <div>😊</div>
+                            <div class="emotion-label">Feliz</div>
+                        </button>
+                        <button class="emotion-btn" onclick="selectCheckoutEmotion('😰')">
+                            <div>😰</div>
+                            <div class="emotion-label">Nervoso</div>
+                        </button>
+                        <button class="emotion-btn" onclick="selectCheckoutEmotion('😤')">
+                            <div>😤</div>
+                            <div class="emotion-label">Chateado</div>
+                        </button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <p style="color: #7f8c8d; margin-bottom: 16px; text-align: center;">Como você está agora, depois da atividade?</p>
+                    <div class="slider-container">
+                        <div class="slider-labels">
+                            <span>Tranquilo</span>
+                            <span>Muito Ansioso</span>
+                        </div>
+                        <input type="range" min="1" max="10" value="5" 
+                               oninput="appState.checkoutValue = this.value; document.getElementById('sliderValue2').textContent = this.value + '/10'">
+                        <div class="slider-value" id="sliderValue2">5/10</div>
+                    </div>
+                `;
+            }
+        }
+
+        function selectCheckoutEmotion(emoji) {
+            appState.checkoutValue = emoji;
+            document.querySelectorAll('.emotion-btn').forEach(el => el.classList.remove('selected'));
+            event.target.closest('.emotion-btn').classList.add('selected');
+        }
+
+        function submitCheckout() {
+            if (!appState.checkoutValue) {
+                alert('Por favor, registre como você está!');
+                return;
+            }
+
+            // Calculate result
+            const checkin = appState.interfaceType === 'emoji' ? appState.checkinValue : parseInt(appState.checkinValue);
+            const checkout = appState.interfaceType === 'emoji' ? appState.checkoutValue : parseInt(appState.checkoutValue);
+
+            let resultType = 'maintained';
+            let improved = false;
+
+            if (appState.interfaceType === 'emoji') {
+                const emotionOrder = { '😰': 0, '😤': 1, '😐': 2, '😊': 3 };
+                if (emotionOrder[checkout] > emotionOrder[checkin]) {
+                    resultType = 'improved';
+                    improved = true;
+                } else if (emotionOrder[checkout] < emotionOrder[checkin]) {
+                    resultType = 'declined';
+                }
+            } else {
+                if (checkout < checkin) {
+                    resultType = 'improved';
+                    improved = true;
+                } else if (checkout > checkin) {
+                    resultType = 'declined';
+                }
+            }
+
+            // Save to history
+            appState.data.history.push({
+                date: new Date().toISOString(),
+                activity: appState.selectedActivity,
+                checkin: appState.checkinValue,
+                checkout: appState.checkoutValue,
+                result: resultType
+            });
+
+            // Update streak
+            if (improved) {
+                appState.data.streak++;
+            }
+
+            saveData();
+
+            // Display result
+            renderResult(resultType, checkin, checkout);
+            goToScreen('screenResult');
+        }
+
+        // =============== SALVAR RELATÓRIO ===============
+        function salvarRelatorio() {
+            appState.relatorio.oQueFez = document.getElementById('relOQueFez').value;
+            appState.relatorio.comoSauiu = document.getElementById('relComoSauiu').value;
+            appState.relatorio.comoSentiu = document.getElementById('relComoSentiu').value;
+            appState.relatorio.compartilhar = document.getElementById('relCompartilhar').checked;
+
+            // Se há relatório, adicionar ao histórico
+            if (appState.data.history.length > 0) {
+                const lastEntry = appState.data.history[appState.data.history.length - 1];
+                lastEntry.relatorio = {
+                    oQueFez: appState.relatorio.oQueFez,
+                    comoSauiu: appState.relatorio.comoSauiu,
+                    comoSentiu: appState.relatorio.comoSentiu,
+                    compartilhar: appState.relatorio.compartilhar,
+                    dataSalvo: new Date().toISOString()
+                };
+            }
+
+            saveData();
+
+            // Mostrar confirmação e voltar
+            alert('Relatório salvo! Obrigado por compartilhar sua experiência! 📝');
+            goToScreen('screenDashboard');
+            renderWeekGraph();
+            updateStats();
+        }
+
+        function renderResult(resultType, checkin, checkout) {
+            const container = document.getElementById('resultContent');
+            let html = '';
+
+            if (resultType === 'improved') {
+                html = `
+                    <div class="result-box result-improved">
+                        <div class="result-emoji">🎉</div>
+                        <div class="result-title">Parabéns! Você Melhorou!</div>
+                        <div class="result-text">
+                            <strong>Antes:</strong> ${checkin}<br/>
+                            <strong>Depois:</strong> ${checkout}<br/>
+                            <br/>
+                            Você conseguiu regular sua emoção através do movimento!
+                        </div>
+                    </div>
+                `;
+            } else if (resultType === 'maintained') {
+                html = `
+                    <div class="result-box result-maintained">
+                        <div class="result-emoji">✨</div>
+                        <div class="result-title">Muito Bem!</div>
+                        <div class="result-text">
+                            Você manteve seu bem-estar! Isso também é um sucesso.
+                            Continue assim!
+                        </div>
+                    </div>
+                `;
+            } else {
+                html = `
+                    <div class="result-box result-declined">
+                        <div class="result-emoji">💭</div>
+                        <div class="result-title">Tudo Bem!</div>
+                        <div class="result-text">
+                            Às vezes precisamos tentar diferentes atividades ou horários.
+                            Você tentou e isso já é ótimo!
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (appState.data.streak > 0) {
+                html += `
+                    <div style="margin-top: 20px; padding: 16px; background: var(--light); border-radius: 12px; text-align: center;">
+                        <div style="font-size: 32px; font-weight: 700; color: var(--accent);">${appState.data.streak} 🔥</div>
+                        <div style="color: #7f8c8d; font-size: 13px; margin-top: 4px;">dias seguidos de atividade!</div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // =============== PROGRESS GRAPH ===============
+        function renderWeekGraph() {
+            const today = new Date();
+            const weekGrid = document.getElementById('weekGrid');
+            const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+
+            let html = '';
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+
+                const activity = appState.data.history.find(h => 
+                    h.date.startsWith(dateStr)
+                );
+
+                let cellClass = 'empty';
+                if (activity) {
+                    if (activity.result === 'improved') cellClass = 'success';
+                    else if (activity.result === 'maintained') cellClass = 'partial';
+                    else cellClass = 'failed';
+                }
+
+                html += `
+                    <div class="day-cell ${cellClass}">
+                        <div class="day-name">${days[date.getDay()]}</div>
+                        <div class="day-mark">${cellClass === 'success' ? '✓' : cellClass === 'partial' ? '=' : cellClass === 'failed' ? '✗' : '-'}</div>
+                    </div>
+                `;
+            }
+
+            weekGrid.innerHTML = html;
+        }
+
+        // =============== INITIALIZATION ===============
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+
+            // Verificar se precisa mostrar onboarding
+            const onboardingDone = localStorage.getItem('moveregula_onboarding_done');
+            if (!onboardingDone) {
+                goToScreen('screenOnboarding');
+                showOnboarding();
+            } else {
+                goToScreen('screenWelcome');
+            }
+            
+            document.getElementById('checkinContent').addEventListener('DOMContentLoaded', renderCheckinContent);
+
+            // Initial render
+            renderCheckinContent();
+            renderWeekGraph();
+            updateStats();
+        });
+
+        function updateStats() {
+            const thisWeek = appState.data.history.filter(h => {
+                const d = new Date(h.date);
+                const now = new Date();
+                return (now - d) < 7 * 24 * 60 * 60 * 1000;
+            }).length;
+
+            const thisMonth = appState.data.history.filter(h => {
+                const d = new Date(h.date);
+                const now = new Date();
+                return (now - d) < 30 * 24 * 60 * 60 * 1000;
+            }).length;
+
+            document.getElementById('weekStats').textContent = thisWeek;
+            document.getElementById('monthStats').textContent = thisMonth;
+            document.getElementById('streakDisplay').querySelector('.streak-number').textContent = appState.data.streak;
+        }
+
+        // Renderizar checkin quando entrar na tela
+        document.getElementById('screenCheckin').addEventListener('mouseenter', renderCheckinContent);
+    </script>
+</body>
+</html>

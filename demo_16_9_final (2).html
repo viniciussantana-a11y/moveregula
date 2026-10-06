@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoveRegula - Demo 16:9</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #27AE60 0%, #3498DB 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1600px;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            color: white;
+            padding: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-inline {
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+            width: 100%;
+            text-align: center;
+            margin: 0;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1.2fr 1.8fr;
+            gap: 30px;
+            flex: 1;
+            padding: 0 20px;
+        }
+
+        .phone-frame {
+            background: white;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phone-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 22px;
+            background: #333;
+            border-radius: 0 0 30px 30px;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            background: #ECF0F1;
+            border-radius: 35px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 400px;
+        }
+
+        .phone-header {
+            background: linear-gradient(135deg, #27AE60 0%, #3498DB 100%);
+            color: white;
+            padding: 40px 15px 15px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .phone-header h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .phone-header p {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        .phone-content {
+            flex: 1;
+            padding: 18px 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .text-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            color: #2C3E50;
+            line-height: 1.7;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            max-height: 100%;
+        }
+
+        .text-content h3 {
+            color: #27AE60;
+            font-size: 28px;
+            margin-bottom: 18px;
+            border-bottom: 3px solid #27AE60;
+            padding-bottom: 10px;
+        }
+
+        .text-content p {
+            margin-bottom: 14px;
+            font-size: 16px;
+        }
+
+        .text-content ul {
+            margin-left: 24px;
+            margin-bottom: 14px;
+        }
+
+        .text-content li {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .text-content strong {
+            color: #27AE60;
+        }
+
+        .highlight {
+            background: #e8f8f0;
+            padding: 14px;
+            border-radius: 10px;
+            border-left: 5px solid #27AE60;
+            margin: 14px 0;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            padding: 20px 0;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-prev {
+            background: white;
+            color: #27AE60;
+            border: 2px solid #27AE60;
+        }
+
+        .btn-prev:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-next {
+            background: #27AE60;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #1e8449;
+        }
+
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .step-indicator {
+            text-align: center;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 1200px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .container {
+                aspect-ratio: auto;
+                min-height: 100vh;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .text-content {
+                padding: 20px;
+            }
+
+            .text-content h3 {
+                font-size: 20px;
+            }
+
+            button {
+                padding: 10px 22px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <svg class="logo-inline" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="hdrGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#F0F0F0;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="100" cy="100" r="95" fill="none" stroke="white" stroke-width="2" opacity="0.5"/>
+                    <circle cx="100" cy="30" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="148" cy="47" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="148" cy="153" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="100" cy="170" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="52" cy="153" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="52" cy="47" r="18" fill="white" opacity="0.9"/>
+                    <circle cx="100" cy="100" r="42" fill="white" opacity="0.95"/>
+                    <circle cx="100" cy="100" r="32" fill="white"/>
+                    <text x="100" y="112" text-anchor="middle" font-size="32" dominant-baseline="middle">💚</text>
+                </svg>
+                MoveRegula v2.0
+            </h1>
+            <p>Integração Psicologia & Educação Física | 25 Slides</p>
+        </div>
+
+        <div class="content">
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="phone-header">
+                        <h2>MoveRegula</h2>
+                        <p id="headerSubtitle">Integração Psicologia e EF</p>
+                    </div>
+                    <div class="phone-content" id="phoneContent"></div>
+                </div>
+            </div>
+
+            <div class="text-content" id="textContent"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-prev" id="prevBtn" onclick="previousSlide()">← Anterior</button>
+            <span class="step-indicator" id="stepCount">Slide 1 de 25</span>
+            <button class="btn-next" id="nextBtn" onclick="nextSlide()">Próximo →</button>
+        </div>
+    </div>
+
+    <script>
+        const slides = [
+            {
+                title: '📋 APRESENTAÇÃO: MoveRegula',
+                phone: `<div style="text-align: center;"><div style="font-size: 60px; margin: 15px 0;">🏃💚</div><h2 style="color: #2C3E50; font-size: 20px;">MoveRegula</h2><p style="color: #7f8c8d; font-size: 13px;">App de Integração<br/>Psicologia & EF</p><p style="color: #27AE60; font-weight: 600; margin-top: 15px; font-size: 12px;">Para crianças/jovens com:<br/>TEA e Ansiedade</p></div>`,
+                text: `<h3>Bem-vindo!</h3><p>Este app foi desenvolvido como projeto de integração entre <strong>Psicologia</strong> e <strong>Educação Física</strong>.</p><p><strong>Objetivo:</strong> Ajudar crianças a regularem emoções através do movimento.</p><p><strong>Populações:</strong></p><ul><li>Crianças com <strong>TEA</strong> - 7 a 12 anos</li><li>Crianças/Jovens com <strong>Ansiedade</strong> - 8 a 15 anos</li></ul><div class="highlight"><strong>Base:</strong> Movimento reduz cortisol e aumenta endorfinas em apenas 10 minutos!</div>`
+            },
+            {
+                title: '🧩 O que é TEA?',
+                phone: `<div style="text-align: center; padding: 15px;"><div style="font-size: 50px; margin: 10px 0;">🧩</div><p style="color: #2C3E50; font-size: 13px; line-height: 1.6;"><strong>Transtorno do Espectro Autista</strong><br/><br/>Características principais</p></div>`,
+                text: `<h3>🧩 Transtorno do Espectro Autista (TEA)</h3><p>TEA é um transtorno do desenvolvimento neurológico que afeta a forma como a criança interage com o mundo.</p><p><strong>Principais Desafios:</strong></p><ul><li>Sensibilidade sensória alta (sons, luzes, texturas)</li><li>Dificuldade em coordenação motora grossa e fina</li><li>Preferência forte por atividades estruturadas e previsíveis</li><li>Comportamentos repetitivos ou estereotipados</li><li>Variabilidade na comunicação social</li></ul><p><strong>Como MoveRegula Ajuda:</strong></p><ul><li>✓ Interface estruturada e previsível</li><li>✓ Sem forçar interação social incômoda</li><li>✓ Validação sem julgamento</li><li>✓ Memoriza preferências e adapta-se</li></ul>`
+            },
+            {
+                title: '💭 O que é Ansiedade?',
+                phone: `<div style="text-align: center; padding: 15px;"><div style="font-size: 50px; margin: 10px 0;">💭</div><p style="color: #2C3E50; font-size: 13px;"><strong>Resposta emocional a situações de perigo</strong></p></div>`,
+                text: `<h3>💭 Transtornos de Ansiedade em Crianças/Adolescentes</h3><p>Ansiedade é uma resposta fisiológica normal, mas em transtornos de ansiedade a resposta é desproporcional e prejudica a vida diária.</p><p><strong>Sintomas Principais:</strong></p><ul><li>Medo intenso ou preocupação excessiva persistente</li><li>Evitação de situações que causam ansiedade</li><li>Isolamento social por medo do julgamento</li><li>Dificuldade de concentração e comportamentos repetitivos</li><li>Sintomas físicos (aceleração cardíaca, suor)</li></ul><p><strong>Como MoveRegula Ajuda:</strong></p><ul><li>✓ Movimento reduz cortisol imediatamente</li><li>✓ Confrontação suave e progressiva do medo</li><li>✓ Aumenta autoeficácia através de tarefas reais</li><li>✓ Prova que "consegue fazer" de novo</li></ul>`
+            },
+            {
+                title: '🔄 Diferenças',
+                phone: `<div style="padding: 12px; font-size: 11px;"><table style="width: 100%; border-collapse: collapse;"><tr style="background: #e8f8f0;"><td style="padding: 8px; border: 1px solid #27AE60;"><strong>TEA</strong></td><td style="padding: 8px; border: 1px solid #27AE60;"><strong>Ansiedade</strong></td></tr><tr><td style="padding: 8px; border: 1px solid #ECF0F1;"><strong>Sensório</strong></td><td style="padding: 8px; border: 1px solid #ECF0F1;"><strong>Medo/Preocupação</strong></td></tr><tr style="background: #f5f5f5;"><td style="padding: 8px; border: 1px solid #ECF0F1;"><strong>Estrutura</strong></td><td style="padding: 8px; border: 1px solid #ECF0F1;"><strong>Incerteza</strong></td></tr></table></div>`,
+                text: `<h3>🔄 TEA vs Ansiedade - Diferenças Principais</h3><p><strong>Origem:</strong> TEA é neurológico desde nascença, enquanto ansiedade é resposta psicológica/emocional.</p><p><strong>Tipo de Dificuldade:</strong></p><ul><li><strong>TEA:</strong> Desafio sensório (sons, luzes, texturas incômodas)</li><li><strong>Ansiedade:</strong> Regulação emocional (medo, preocupação exagerada)</li></ul><p><strong>Padrão de Comportamento:</strong></p><ul><li><strong>TEA:</strong> Padrão REPETITIVO (busca da rotina, comportamentos estereotipados)</li><li><strong>Ansiedade:</strong> Padrão EVITANTE (evita situações que causam medo)</li></ul><p><strong>Resposta ao Movimento:</strong></p><ul><li>TEA: Estrutura + previsibilidade</li><li>Ansiedade: Confrontação suave + validação</li></ul><div class="highlight">✓ MoveRegula adapta-se a AMBOS automaticamente!</div>`
+            },
+            {
+                title: '🔬 Base Científica',
+                phone: `<div style="padding: 12px; font-size: 11px;"><div style="background: #e8f8f0; padding: 10px; border-radius: 8px; margin-bottom: 10px;"><p style="margin: 0; font-weight: 600;">4 Pilares Teóricos:</p></div><p style="font-size: 12px; line-height: 1.8;"><strong>🎯 Bandura</strong><br/><strong>💪 Gross & John</strong><br/><strong>🏃 Rebar et al.</strong><br/><strong>📋 Clark & Fairburn</strong></p></div>`,
+                text: `<h3>🔬 Fundação Científica - 4 Teóricos</h3><p><strong>🎯 Bandura (2004) - Autoeficácia Social</strong><br/>Cada sucesso pequeno aumenta a confiança e crença na própria capacidade. Tarefas do dia a dia = autoeficácia REAL.</p><p><strong>💪 Gross & John (2003) - Regulação Emocional</strong><br/>Movimento corporal é um método eficaz de regulação emocional. Ativa o sistema nervoso parassimpático reduzindo cortisol em apenas 10 minutos.</p><p><strong>🏃 Rebar et al. (2015) - Atividade Física e Ansiedade</strong><br/>Uma única sessão de atividade física reduz sintomas de ansiedade por 4-8 horas após a prática.</p><p><strong>📋 Clark & Fairburn (1997) - Terapia Cognitivo-Comportamental</strong><br/>Self-monitoring (auto-observação) quebra crenças limitantes. Criança VÊ que consegue fazer.</p>`
+            },
+            {
+                title: '✅ Fluxo (4 Passos)',
+                phone: `<div style="text-align: center; padding: 10px; font-size: 10px;"><div style="background: #e8f8f0; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; font-weight: 600; color: #27AE60;">1️⃣ CHECK-IN</p></div><div style="background: #e3f2fd; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; font-weight: 600; color: #3498DB;">2️⃣ ATIVIDADE</p></div><div style="background: #fff3cd; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; font-weight: 600; color: #F39C12;">3️⃣ CHECK-OUT</p></div><div style="background: #d1ecf1; padding: 8px; border-radius: 6px;"><p style="margin: 0; font-weight: 600; color: #17a2b8;">4️⃣ RESULTADO</p></div></div>`,
+                text: `<h3>✅ O Fluxo Completo (4 Passos)</h3><p><strong>1️⃣ CHECK-IN: "Como você está AGORA?"</strong><br/>Criança registra sua emoção atual (ícones ou slider). Cria baseline de comparação.</p><p><strong>2️⃣ ATIVIDADE: 10-30 minutos de movimento</strong><br/>Escolhe entre 4 atividades estruturadas (Dança, Caminhada, Ioga, Brincadeira) ou 6 tarefas do dia a dia com maiores recompensas.</p><p><strong>3️⃣ CHECK-OUT: "Como você está AGORA?" (mesma pergunta)</strong><br/>Registra emoção APÓS atividade. Aqui acontece a mágica!</p><p><strong>4️⃣ RESULTADO: App compara ANTES vs DEPOIS</strong><br/>Mostra visualmente a mudança, feedback positivo, pontos e streak. Criança VÊ seu progresso!</p>`
+            },
+            {
+                title: '💪 Atividades Estruturadas',
+                phone: `<div style="padding: 12px; font-size: 10px;"><div class="activity-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"><div style="padding: 8px; background: #f9f9f9; border-radius: 6px; border-left: 2px solid #27AE60;"><strong>💃 Dança</strong><br/>10 min</div><div style="padding: 8px; background: #f9f9f9; border-radius: 6px; border-left: 2px solid #27AE60;"><strong>🚶 Caminhada</strong><br/>10 min</div><div style="padding: 8px; background: #f9f9f9; border-radius: 6px; border-left: 2px solid #27AE60;"><strong>🧘 Ioga</strong><br/>10 min</div><div style="padding: 8px; background: #f9f9f9; border-radius: 6px; border-left: 2px solid #27AE60;"><strong>🎮 Brincadeira</strong><br/>10 min</div></div></div>`,
+                text: `<h3>💪 Atividades Estruturadas (+50 pontos)</h3><p>Desenhadas para serem curtas, claras e previsíveis - ideais para crianças com TEA que precisam de estrutura.</p><p><strong>As 4 Opções:</strong></p><ul><li><strong>💃 Dança:</strong> 10 min com ritmo, aquecimento, movimento e desaceleração</li><li><strong>🚶 Caminhada:</strong> Movimento contínuo moderado, ideal para regulação</li><li><strong>🧘 Ioga:</strong> Respiração e stretching, regulação do sistema nervoso</li><li><strong>🎮 Brincadeira:</strong> Movimento lúdico e exploratório, sem pressão</li></ul><p><strong>Cada atividade inclui:</strong></p><ul><li>✓ Tutorial passo-a-passo (Aquecimento → Movimento → Desaceleração)</li><li>✓ Timer com pausa/retomar (criança controla)</li><li>✓ Mascote reativo (😊→🔥→💪)</li><li>✓ +50 pontos ao completar</li></ul>`
+            },
+            {
+                title: '⭐ Tarefas do Dia a Dia',
+                phone: `<div style="padding: 12px; font-size: 9px;"><div class="activity-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"><div style="padding: 8px; background: #f9f9f9; border-radius: 6px; border-left: 2px solid #27AE60;">🧹 Arrumar Quarto</div><div style="padding: 8px; background: #f9f9f9; border-radius: 6px; border-left: 2px solid #27AE60;">👨‍🍳 Cozinha</div><div style="padding: 8px; background: #f9f9f9; border-radius: 6px; border-left: 2px solid #27AE60;">💬 Conversa Social</div><div style="padding: 8px; background: #f9f9f9; border-radius: 6px; border-left: 2px solid #27AE60;">📚 Estudo</div><div style="padding: 8px; background: #f9f9f9; border-radius: 6px; border-left: 2px solid #27AE60;">🎨 Criatividade</div><div style="padding: 8px; background: #f9f9f9; border-radius: 6px; border-left: 2px solid #27AE60;">👫 Interação</div></div></div>`,
+                text: `<h3>⭐ Tarefas do Dia a Dia (+100 pontos ⭐)</h3><p>Maiores recompensas porque são tarefas reais que aumentam autoeficácia genuína. Criança realiza algo que importa de verdade.</p><p><strong>As 6 Tarefas:</strong></p><ul><li><strong>🧹 Arrumar Quarto:</strong> 15-30 min, responsabilidade pelo espaço</li><li><strong>👨‍🍳 Cozinha:</strong> 20-30 min com responsável, aprendizado de vida</li><li><strong>💬 Conversa com Alguém:</strong> Interação social intencional</li><li><strong>📚 Tempo de Estudo:</strong> Foco e concentração em atividade importante</li><li><strong>🎨 Criatividade/Arte:</strong> Expressão emocional através de arte</li><li><strong>👫 Interação Social:</strong> Atividade social estruturada</li></ul><p><strong>Por que +100 pontos?</strong> Porque quando criança completa "coisas que importam" de verdade, a autoeficácia cresce REALMENTE. Não é gamificação vazia - é competência real!</p>`
+            },
+            {
+                title: '📚 Tutorial',
+                phone: `<div style="padding: 10px; font-size: 10px;"><h3 style="color: #27AE60; text-align: center; margin-bottom: 10px;">Dança: 3 Fases</h3><div style="background: #f5f5f5; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; color: #27AE60; font-weight: 600;">🔥 Aquecimento</p></div><div style="background: #f5f5f5; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; color: #27AE60; font-weight: 600;">💃 Movimento</p></div><div style="background: #f5f5f5; padding: 8px; border-radius: 6px;"><p style="margin: 0; color: #27AE60; font-weight: 600;">🧘 Desaceleração</p></div></div>`,
+                text: `<h3>📚 Tutorial</h3><p><strong>ANTES do timer, 3 fases:</strong></p><ul><li>🔥 Aquecimento (1 min)</li><li>💪 Movimento (7-8 min)</li><li>🧘 Desaceleração (1-2 min)</li></ul><div class="highlight"><strong>TEA:</strong> Estrutura clara, sem surpresas.<br/><strong>Ansiedade:</strong> Supervisor tem guia clara.</div>`
+            },
+            {
+                title: '⏸ Timer com Pausa',
+                phone: `<div style="text-align: center; padding: 12px;"><div style="font-size: 40px; margin: 8px 0;">🔥</div><div style="font-size: 40px; color: #27AE60; font-weight: bold; font-family: monospace; margin: 12px 0;">07:22</div><div style="width: 90%; height: 5px; background: #ECF0F1; border-radius: 3px; overflow: hidden; margin: 12px auto;"><div style="width: 37%; height: 100%; background: linear-gradient(90deg, #27AE60, #3498DB);"></div></div><div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: 12px 0;"><button style="padding: 8px; border: none; border-radius: 6px; font-size: 9px; color: white; background: #3498DB;">⏸ Pausar</button><button style="padding: 8px; border: none; border-radius: 6px; font-size: 9px; color: white; background: #27AE60;">✓ Terminei</button><button style="padding: 8px; border: none; border-radius: 6px; font-size: 9px; color: white; background: #E74C3C;">⏹ Parar</button></div></div>`,
+                text: `<h3>⏸ Timer com 3 Botões</h3><p><strong>Agora:</strong> 3 botões claros:</p><ul><li>⏸ Pausar: Congela o timer</li><li>▶ Retomar: Volta do ponto</li><li>⏹ Parar: Encerra atividade</li></ul><div class="highlight">Criança pode fazer pausas naturais sem se sentir fracassada!</div>`
+            },
+            {
+                title: '😊🔥💪 Mascote',
+                phone: `<div style="text-align: center; padding: 12px; font-size: 11px; line-height: 1.6;"><p>0-3 min:</p><p style="font-size: 28px; margin: 3px 0;">😊</p><p style="color: #7f8c8d; font-size: 10px;">Comecinho</p><p style="margin-top: 8px;">3-7 min:</p><p style="font-size: 28px; margin: 3px 0;">🔥</p><p style="color: #7f8c8d; font-size: 10px;">Pique</p><p style="margin-top: 8px;">7-10 min:</p><p style="font-size: 28px; margin: 3px 0;">💪</p><p style="color: #7f8c8d; font-size: 10px;">Final</p></div>`,
+                text: `<h3>😊🔥💪 Mascote Reativo</h3><p><strong>Durante o timer:</strong></p><ul><li>0-3 min: 😊 (Animando)</li><li>3-7 min: 🔥 (Energizado)</li><li>7-10 min: 💪 (Motivação)</li></ul><div class="highlight">App ganha "alma"! Criança usa "amigo", não "ferramenta fria".</div>`
+            },
+            {
+                title: '✅ Check-Out',
+                phone: `<div style="text-align: center; padding: 12px;"><p style="color: #7f8c8d; font-size: 11px; margin-bottom: 10px;">Depois da atividade:</p><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"><button style="padding: 12px; border: none; border-radius: 8px; background: white; border: 2px solid #ECF0F1; cursor: pointer; font-size: 20px;">😐</button><button style="padding: 12px; border: none; border-radius: 8px; background: #e8f8f0; border: 2px solid #27AE60; cursor: pointer; font-size: 20px;">😊</button><button style="padding: 12px; border: none; border-radius: 8px; background: white; border: 2px solid #ECF0F1; cursor: pointer; font-size: 20px;">😰</button><button style="padding: 12px; border: none; border-radius: 8px; background: white; border: 2px solid #ECF0F1; cursor: pointer; font-size: 20px;">😤</button></div></div>`,
+                text: `<h3>✅ Check-Out</h3><p><strong>Criança registra COMO SE SENTE AGORA.</strong></p><p>Mesma interface do Check-In.</p><div class="highlight"><strong>A Mágica Acontece Aqui:</strong> App COMPARA antes vs depois!</div><p style="margin-top: 12px;"><strong>Exemplos:</strong></p><ul><li>😰 → 😊 = MELHOROU ✓</li><li>😊 → 😊 = MANTEVE ✓</li><li>😐 → 😰 = Orientação</li></ul>`
+            },
+            {
+                title: '🎉 Resultado',
+                phone: `<div style="text-align: center; padding: 12px;"><div style="font-size: 40px; margin: 8px 0;">🎉</div><p style="color: #27AE60; font-weight: 600; font-size: 12px;">Parabéns! Melhorou!</p><div style="background: #e8f8f0; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 10px;"><p style="margin: 0;"><strong>ANTES:</strong> 😰</p><p style="margin: 6px 0; text-align: center; font-size: 18px;">↓</p><p style="margin: 0;"><strong>DEPOIS:</strong> 😊</p></div><div style="background: white; border: 2px solid #27AE60; padding: 8px; border-radius: 8px; text-align: center;"><p style="color: #27AE60; font-weight: 600; margin: 0; font-size: 12px;">🔥 Streak: 1</p></div></div>`,
+                text: `<h3>🎉 Resultado Positivo</h3><p><strong>Se MELHOROU:</strong></p><ul><li>Mostra emojis ANTES vs DEPOIS</li><li>Mensagem: "Parabéns!"</li><li>Adiciona streak 🔥</li><li>Adiciona pontos</li></ul><p><strong>Se MANTEVE:</strong></p><ul><li>Mensagem: "Já estava bem!"</li></ul><p><strong>Se PIOROU:</strong></p><ul><li>Mensagem: "Quer tentar outra?"</li><li>Sem culpa</li></ul>`
+            },
+            {
+                title: '📝 Relatório',
+                phone: `<div style="padding: 10px; font-size: 10px;"><h3 style="color: #27AE60; text-align: center; margin-bottom: 10px;">Reflexão</h3><div style="background: #f9f9f9; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; color: #27AE60; font-weight: 600;">O que você fez?</p></div><div style="background: #f9f9f9; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; color: #27AE60; font-weight: 600;">Como se saiu?</p></div><div style="background: #f9f9f9; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; color: #27AE60; font-weight: 600;">Como se sentiu?</p></div><label style="display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 9px;"><input type="checkbox" checked> Compartilhar?</label></div>`,
+                text: `<h3>📝 Relatório Pós-Atividade</h3><p><strong>Criança pode escrever:</strong></p><ul><li>O que você fez?</li><li>Como se saiu?</li><li>Como se sentiu?</li></ul><p><strong>[✓] Compartilhar com responsáveis?</strong></p><div class="highlight"><strong>Criança:</strong> Processamento reflexivo<br/><strong>Responsáveis:</strong> Visão real da evolução</div>`
+            },
+            {
+                title: '📊 Gráfico de 7 Dias',
+                phone: `<div style="padding: 12px; text-align: center;"><p style="font-size: 11px; color: #7f8c8d; margin-bottom: 10px;">Seu Progresso</p><div style="display: flex; align-items: flex-end; justify-content: space-around; height: 80px; gap: 4px;"><div style="width: 10px; background: #27AE60; height: 80%;"></div><div style="width: 10px; background: #27AE60; height: 60%;"></div><div style="width: 10px; background: #F39C12; height: 50%;"></div><div style="width: 10px; background: #E74C3C; height: 40%;"></div><div style="width: 10px; background: #27AE60; height: 75%;"></div><div style="width: 10px; background: #27AE60; height: 85%;"></div><div style="width: 10px; background: #27AE60; height: 90%;"></div></div><p style="font-size: 10px; color: #7f8c8d; margin-top: 8px;">🟢 Melhorou | 🟡 Manteve | 🔴 Piorou</p></div>`,
+                text: `<h3>📊 Gráfico de 7 Dias</h3><p><strong>Cores indicam resultado:</strong></p><ul><li>🟢 Verde: Melhorou</li><li>🟡 Amarelo: Manteve</li><li>🔴 Laranja: Piorou</li></ul><div class="highlight"><strong>Responsáveis veem evolução REAL em tempo real.</strong></div>`
+            },
+            {
+                title: '🔥 Streak & Pontos',
+                phone: `<div style="text-align: center; padding: 12px;"><div style="background: linear-gradient(135deg, #e8f8f0, #e3f2fd); padding: 12px; border-radius: 10px; margin-bottom: 12px;"><p style="font-size: 11px; color: #27AE60; font-weight: 600; margin: 0;">🔥 STREAK</p><p style="font-size: 22px; color: #27AE60; font-weight: 700; margin: 6px 0;">7</p><p style="font-size: 10px; color: #7f8c8d; margin: 0;">✨ Consistente!</p></div><div style="background: linear-gradient(135deg, #fff3cd, #ffe8cc); padding: 12px; border-radius: 10px;"><p style="font-size: 11px; color: #F39C12; font-weight: 600; margin: 0;">⭐ PONTOS</p><p style="font-size: 22px; color: #F39C12; font-weight: 700; margin: 6px 0;">850</p><p style="font-size: 10px; color: #7f8c8d; margin: 0;">Mantenha!</p></div></div>`,
+                text: `<h3>🔥 Streak & Pontos</h3><p><strong>Streak 🔥:</strong></p><ul><li>3 dias = 🌱 Iniciante</li><li>7 dias = ✨ Consistente</li><li>14 dias = 👑 Mestre</li><li>30 dias = 🏆 Lenda</li></ul><p><strong>Pontos:</strong></p><ul><li>+50 pts (Estruturada)</li><li>+100 pts (Dia a Dia)</li><li>+10 bonus (Se melhorou)</li></ul>`
+            },
+            {
+                title: '📱 Caso: Ana (9 anos, TEA)',
+                phone: `<div style="padding: 12px; font-size: 10px;"><h3 style="color: #27AE60; text-align: center; margin-bottom: 10px;"><strong>Ana - TEA</strong></h3><ul style="margin-left: 10px; font-size: 11px; line-height: 1.8;"><li><strong>Interface:</strong> Ícones</li><li><strong>Atividade:</strong> SEMPRE Dança</li><li><strong>Supervisor:</strong> Mãe, 18h</li><li><strong>Relatório:</strong> NÃO escreve</li></ul></div>`,
+                text: `<h3>📱 Caso Real: Ana (9 anos com TEA)</h3><p><strong>Perfil de Desenvolvimento:</strong> Sensibilidade sensória elevada, preferência extrema por rotina, dificuldade em mudanças.</p><p><strong>Como Ana Usa MoveRegula:</strong></p><ul><li><strong>Interface:</strong> ÍCONES (😊😰😤😐) - mais visual, menos texto</li><li><strong>Atividade:</strong> SEMPRE DANÇA às 18h - rotina ritualisticamente importante</li><li><strong>Supervisor:</strong> Mãe participa junto - conforto da figura segura</li><li><strong>Relatório:</strong> NÃO escreve - sensível a escrita prolongada</li></ul><p><strong>Benefícios Observáveis (2 semanas):</strong></p><ul><li>→ Redução de 60% em comportamentos repetitivos</li><li>→ Melhor regulação sensória pós-atividade</li><li>→ Confiança na rotina previsível</li></ul>`
+            },
+            {
+                title: '📱 Caso: Lucas (12 anos, Ansiedade)',
+                phone: `<div style="padding: 12px; font-size: 10px;"><h3 style="color: #3498DB; text-align: center; margin-bottom: 10px;"><strong>Lucas - Ansiedade</strong></h3><ul style="margin-left: 10px; font-size: 11px; line-height: 1.8;"><li><strong>Interface:</strong> Slider 1-10</li><li><strong>Atividades:</strong> VARIA</li><li><strong>Foco:</strong> Tarefas sociais</li><li><strong>Relatório:</strong> ESCREVE</li></ul></div>`,
+                text: `<h3>📱 Caso Real: Lucas (12 anos com Ansiedade)</h3><p><strong>Perfil de Desenvolvimento:</strong> Ansiedade moderada, isolamento social por medo do julgamento, evitação de situações novas.</p><p><strong>Como Lucas Usa MoveRegula:</strong></p><ul><li><strong>Interface:</strong> SLIDER 1-10 - quantifica a ansiedade, menos emocional</li><li><strong>Atividades:</strong> VARIA entre Dança, Conversa Social, Ioga - confrontação suave do medo</li><li><strong>Foco:</strong> Tarefas sociais (Conversa, Interação) - aumenta exposição</li><li><strong>Relatório:</strong> ESCREVE reflexões - processa emoções, aumenta metacognição</li></ul><p><strong>Benefícios Observáveis (3 semanas):</strong></p><ul><li>→ Redução de 40% em sintomas de ansiedade pós-atividade</li><li>→ Participação em atividades sociais aumentou 50%</li><li>→ Isolamento diminui gradualmente</li></ul>`
+            },
+            {
+                title: '✅ Diferenciais',
+                phone: `<div style="padding: 12px; font-size: 10px;"><div style="background: #fff3cd; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; color: #F39C12; font-weight: 600;">❌ NÃO diagnostica</p></div><div style="background: #fff3cd; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; color: #F39C12; font-weight: 600;">❌ NÃO gamifica demais</p></div><div style="background: #d4edda; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; color: #28a745; font-weight: 600;">✅ APP APRENDE</p></div><div style="background: #d4edda; padding: 8px; border-radius: 6px;"><p style="margin: 0; color: #28a745; font-weight: 600;">✅ PRIVACIDADE</p></div></div>`,
+                text: `<h3>✅ Diferenciais</h3><ul><li>❌ NÃO diagnostica explicitamente</li><li>❌ NÃO gamifica demais</li><li>❌ NÃO força interface</li><li>✅ APP APRENDE automaticamente</li><li>✅ RESPEITA PRIVACIDADE</li><li>✅ EMBASADO EM CIÊNCIA</li></ul>`
+            },
+            {
+                title: '🎯 Benefícios Gerais',
+                phone: `<div style="padding: 12px; font-size: 10px;"><div style="background: #e8f8f0; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; color: #27AE60; font-weight: 600; font-size: 12px;">Para TEA</p><p style="margin: 4px 0; font-size: 10px;">Estrutura + Sensório</p></div><div style="background: #e3f2fd; padding: 8px; border-radius: 6px; margin-bottom: 6px;"><p style="margin: 0; color: #3498DB; font-weight: 600; font-size: 12px;">Para Ansiedade</p><p style="margin: 4px 0; font-size: 10px;">Confrontação + Validação</p></div><div style="background: #d4edda; padding: 8px; border-radius: 6px;"><p style="margin: 0; color: #28a745; font-weight: 600; font-size: 12px;">Para AMBOS</p><p style="margin: 4px 0; font-size: 10px;">Sem competição, progresso real</p></div></div>`,
+                text: `<h3>🎯 Benefícios Comprovados</h3><p><strong>Para Crianças com TEA:</strong></p><ul><li>✓ Estrutura clara reduz ansiedade imediata</li><li>✓ Interface customizável (ícones ou slider)</li><li>✓ Menos comportamentos repetitivos/estereotipados</li><li>✓ Melhora na regulação sensória pós-atividade</li></ul><p><strong>Para Crianças/Adolescentes com Ansiedade:</strong></p><ul><li>✓ Confrontação suave e progressiva do medo</li><li>✓ Reduz sintomas de ansiedade por 4-8 horas</li><li>✓ Aumenta autoeficácia através de tarefas reais</li><li>✓ Isolamento social diminui gradualmente</li></ul><p><strong>Para AMBOS (Benefícios Transversais):</strong></p><ul><li>✓ Sem competição - progresso é pessoal</li><li>✓ Progresso visível em tempo real</li><li>✓ Validação sem julgamento</li><li>✓ Supervisores têm relatórios reflexivos claros</li></ul>`
+            },
+            {
+                title: '🚀 Próximos Passos',
+                phone: `<div style="padding: 12px; font-size: 10px;"><ul style="margin-left: 12px; line-height: 1.6;"><li><strong>Fase 1:</strong><br/>Teste (2 semanas)</li><li><strong>Fase 2:</strong><br/>Feedback (sem 2-3)</li><li><strong>Fase 3:</strong><br/>Iterações</li><li><strong>Fase 4:</strong><br/>Resultados</li><li><strong>Fase 5:</strong><br/>Publicação</li></ul></div>`,
+                text: `<h3>🚀 Próximos Passos</h3><p><strong>Fase 1️⃣: Teste Focal</strong></p><ul><li>2-3 crianças com TEA</li><li>2-3 com Ansiedade</li><li>Duração: 2 semanas</li></ul><p><strong>Fase 2️⃣: Feedback</strong></p><ul><li>Usabilidade</li><li>Preferências</li><li>Melhorias</li></ul><p><strong>Fases 3️⃣-5️⃣: Iteração, Documentação, Publicação</strong></p>`
+            },
+            {
+                title: '💚 Conclusão',
+                phone: `<div style="text-align: center;"><div style="font-size: 60px; margin: 15px 0;">💚🏃</div><h2 style="color: #2C3E50; font-size: 16px; margin: 0;">MoveRegula v2.0</h2><p style="color: #7f8c8d; font-size: 11px; margin-top: 8px;">Transformando emoção em movimento</p></div>`,
+                text: `<h3>💚 Conclusão - MoveRegula v2.0</h3><p><strong>MoveRegula é uma solução completa, científica, humanizada e inclusiva.</strong></p><p>Nosso app respeita as necessidades neurobiológicas e psicológicas únicas de cada criança, oferecendo:</p><ul><li>✓ Interfaces customizáveis (não diagnostica, apenas adapta)</li><li>✓ Estrutura clara para TEA, confrontação suave para Ansiedade</li><li>✓ 4 pilares teóricos robustos (Bandura, Gross & John, Rebar et al., Clark & Fairburn)</li><li>✓ Tarefas do dia a dia que criam autoeficácia REAL</li><li>✓ Supervisão clara através de relatórios reflexivos</li><li>✓ Feedback imediato e validação sem julgamento</li></ul><p><strong>MoveRegula oferece a ponte entre emoção (Psicologia) e ação (Educação Física) que crianças e adolescentes precisam.</strong></p><div class="highlight"><strong>✓ Pronto para teste com grupo focal, validação e implementação real.</strong></div><p style="text-align: center; margin-top: 16px; font-size: 16px; font-weight: 700; color: #27AE60;">Onde a Psicologia encontra o Movimento 💚</p>`
+            }
+        ];
+
+        let currentSlide = 0;
+
+        function renderSlide(index) {
+            const slide = slides[index];
+            document.getElementById('phoneContent').innerHTML = slide.phone;
+            document.getElementById('textContent').innerHTML = slide.text;
+            document.getElementById('stepCount').textContent = `Slide ${index + 1} de ${slides.length}`;
+            updateButtons();
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function updateButtons() {
+            const disabled = currentSlide === 0;
+            document.getElementById('prevBtn').classList.toggle('btn-disabled', disabled);
+            document.getElementById('prevBtn').disabled = disabled;
+            
+            const nextDisabled = currentSlide === slides.length - 1;
+            document.getElementById('nextBtn').classList.toggle('btn-disabled', nextDisabled);
+            document.getElementById('nextBtn').disabled = nextDisabled;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') previousSlide();
+        });
+
+        renderSlide(0);
+    </script>
+</body>
+</html>
